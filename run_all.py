@@ -75,13 +75,22 @@ if __name__ == "__main__":
     bribe = importlib.import_module("06_bribe_analysis")
     bribe.run()
 
-    step(7, "Generating Research Paper (.docx)")
-    paper = importlib.import_module("07_generate_paper")
-    out_docx = paper.build_paper(
-        actual_tvk_seats=ACTUAL_TVK_SEATS,
-        actual_dmk_seats=ACTUAL_DMK_SEATS,
-        actual_admk_seats=ACTUAL_ADMK_SEATS,
-    )
+    step(7, "Research Paper (.docx) — using hand-edited canonical version")
+    # The .docx in outputs/ is the AUTHORITATIVE, hand-edited paper.
+    # Auto-regeneration via 07_generate_paper.py is intentionally disabled
+    # so manual edits in the Word document are not overwritten.
+    # To regenerate the docx from source instead, set REGENERATE_DOCX=1.
+    out_docx = os.path.join(os.path.dirname(__file__), "outputs",
+                            "The_Improbable_Mandate_TVK_TN2026.docx")
+    if os.environ.get("REGENERATE_DOCX") == "1":
+        paper = importlib.import_module("07_generate_paper")
+        out_docx = paper.build_paper(
+            actual_tvk_seats=ACTUAL_TVK_SEATS,
+            actual_dmk_seats=ACTUAL_DMK_SEATS,
+            actual_admk_seats=ACTUAL_ADMK_SEATS,
+        )
+    else:
+        print(f"  Skipping auto-generation. Canonical docx: {out_docx}")
 
     step(8, "Generating Interactive HTML Companion")
     html_gen = importlib.import_module("08_generate_interactive_html")
